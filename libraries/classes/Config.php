@@ -1541,7 +1541,7 @@ class Config
      *
      * @return string|null
      */
-    public function getTempDir(string $name): ?string
+    public function getTempDir($name)
     {
         static $temp_dir = array();
 
@@ -1550,11 +1550,17 @@ class Config
         }
 
         $path = $this->get('TempDir');
+		//add trailing slash if not exists
+		if(mb_substr($path, -1, 1) !== '/'){
+			$path .= '/';
+		}
+
         if (empty($path)) {
             $path = null;
         } else {
-            $path .= '/' . $name;
+            $path .= $name;
             if (! @is_dir($path)) {
+				trigger_error($path);
                 @mkdir($path, 0770, true);
             }
             if (! @is_dir($path) || ! @is_writable($path)) {
@@ -1565,7 +1571,7 @@ class Config
         $temp_dir[$name] = $path;
         return $path;
     }
-
+    
     /**
      * Returns temporary directory
      *
